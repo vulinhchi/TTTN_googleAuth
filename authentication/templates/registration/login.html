@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %} Login page {% endblock %}
+
+{% block content %}
+
+
+<div class="body"></div>
+	<div class="grad"></div>
+	<div class="header">
+		{% for field in form %}
+    	{{ field.errors }}
+    {% endfor %}
+		<div>Accounts<span>Login</span></div>
+	</div>
+	<br>
+<div class="login">
+	<h1> Let's login </h1>
+	<form method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<script src='https://www.google.com/recaptcha/api.js'></script>
+  <div class="g-recaptcha" data-sitekey="6Lf35GIUAAAAAFg4uWQAkyQtBLhIVVP5ZvXJnp9b"></div>
+	<button type="submit"  class="btn btn-custom btn-lg page-scroll" >Login</button>
+	</form>
+	<script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+</div>
+
+{% endblock %}

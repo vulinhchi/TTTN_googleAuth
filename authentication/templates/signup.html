@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+
+{% block title %} Register page {% endblock %}
+
+{% block content %}
+
+<div class="body_signup"></div>
+	<div class="grad"></div>
+	<div class="header">
+
+		<div>Accounts<span>Signup</span></div>
+	</div>
+	<br>
+<div class="login">
+	{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+<h1> register</h1>
+<form method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button type="submit" class="btn btn-custom btn-lg page-scroll">Register</button>
+</form>
+</div>
+{% endblock %}
