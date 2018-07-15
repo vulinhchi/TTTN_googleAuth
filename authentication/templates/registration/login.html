@@ -16,7 +16,18 @@
 	<h1> Let's login </h1>
 	<form method="post">
 		{% csrf_token %}
+    {% if messages %}
+    <ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
 		{{ form.as_p }}
+		<!-- add recaptcha -->
+		<script src='https://www.google.com/recaptcha/api.js'></script>
+		<div class="g-recaptcha" data-sitekey="6Lf35GIUAAAAAFg4uWQAkyQtBLhIVVP5ZvXJnp9b"></div>
+
 		<button type="submit" class="btn btn-custom btn-lg page-scroll">Login</button>
 	</form>
 	 <a href="{% url 'registration:signup' %}" > let's sign in now!</a>

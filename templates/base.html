@@ -19,7 +19,7 @@
 <!-- login form -->
 <link rel="stylesheet" type="text/css"  href="{% static '/css/login_style.css' %}">
 <!-- catch error form -->
-
+<script src='https://www.google.com/recaptcha/api.js'></script>
 
 </head>
 <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
@@ -41,7 +41,9 @@
           <li>Hi {{ user.username }}</li>
           <li><a href="{% url 'logout' %}">Logout </a></li>
         {% else %}
-        <li>  <a href="{% url 'login' %}">login</a> </li>
+        <!-- <li>  <a href="{% url 'login' %}">login</a> </li>  -->
+        <!-- cach dung login mac dinh, k can viet views -->
+        <li>  <a href="{% url 'registration:login1' %}">login!!</a> </li>
         <li>  <a href="{% url 'registration:signup' %}">signup</a> </li>
         {% endif %}
       </ul>

@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'authentication',
-    # 'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -118,7 +117,11 @@ EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'PYTHON1_SHIPPERCHAIN <noreply@shipperchain.com>'
 
 GOOGLE_RECAPTCHA_SECRET_KEY = '6Lf35GIUAAAAABPXR9iv4B3s-cM3Kvv55cEQwhsD'
+RECAPTCHA_PRIVATE_KEY = '6Lf35GIUAAAAABPXR9iv4B3s-cM3Kvv55cEQwhsD'
+RECAPTCHA_PUBLIC_KEY = '6Lf35GIUAAAAAFg4uWQAkyQtBLhIVVP5ZvXJnp9b'
 
+# NOCAPTCHA = True
+RECAPTCHA_PROXY = 'http://localhost:9000'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 

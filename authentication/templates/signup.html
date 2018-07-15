@@ -15,12 +15,28 @@
 <h1> register</h1>
 <form method="POST" action="{% url 'registration:signup' %}" >
 	{% csrf_token %}
+	<!-- message for recaptcha -->
+	{% if messages %}
+	<ul class="messages">
+	{% for message in messages %}
+	<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+	{% endfor %}
+	</ul>
+	{% endif %}
+
+	<!-- catch error POST form -->
+	{% for hidden in form.hidden_fields %}
+	{{ hidden }}
+	{% endfor %}
 	{% for field in form %}
-	    <div >
+	    <div class="fieldWrapper">
 	        {{ field.errors }}
 	        {{ field.label_tag }} {{ field }}
 	    </div>
 	{% endfor %}
+	<!-- add recaptcha -->
+	<script src='https://www.google.com/recaptcha/api.js'></script>
+	<div class="g-recaptcha" data-sitekey="6Lf35GIUAAAAAFg4uWQAkyQtBLhIVVP5ZvXJnp9b"></div>
 
 	<input type="submit" class="btn btn-custom btn-lg page-scroll" value="Signup"/>
 </form>
