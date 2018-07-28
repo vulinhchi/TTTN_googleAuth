@@ -14,7 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'authentication',
+    'mfa_ggauth',
+
+
 ]
 
 MIDDLEWARE = [
@@ -48,8 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mfa_ggauth.middleware.MfaMiddleware',
 ]
-
 ROOT_URLCONF = 'google_auth.urls'
 
 TEMPLATES = [
@@ -117,13 +120,13 @@ EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'PYTHON1_SHIPPERCHAIN <noreply@shipperchain.com>'
 
 GOOGLE_RECAPTCHA_SECRET_KEY = '6Lf35GIUAAAAABPXR9iv4B3s-cM3Kvv55cEQwhsD'
-RECAPTCHA_PRIVATE_KEY = '6Lf35GIUAAAAABPXR9iv4B3s-cM3Kvv55cEQwhsD'
-RECAPTCHA_PUBLIC_KEY = '6Lf35GIUAAAAAFg4uWQAkyQtBLhIVVP5ZvXJnp9b'
 
 # NOCAPTCHA = True
 RECAPTCHA_PROXY = 'http://localhost:9000'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
+
+AUTH_USER_MODEL = 'auth.User'
 
 STATIC_URL = '/static/'
 #STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -132,5 +135,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 
 ]
-LOGIN_REDIRECT_URL = '/'
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+LOGIN_URL = LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'

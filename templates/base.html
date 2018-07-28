@@ -58,6 +58,12 @@
     <div class="container">
       <div class="row">
         <div class="intro-text">
+          <h3>Login Successful</h3>
+          {% if request.user.userotp %}
+            <h3><a href="{% url 'mfa:disable_mfa' %}">Disable Mfa</a></h3>
+          {% else %}
+            <h3><a href="{% url 'mfa:configure_mfa' %}">Configure Mfa</a></h3>
+          {% endif %}
           {% block content %}
           {% endblock %}
 

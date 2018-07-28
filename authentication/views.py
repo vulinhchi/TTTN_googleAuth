@@ -1,5 +1,6 @@
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse,HttpResponseRedirect,JsonResponse
 from django.shortcuts import render, redirect
+from django.template import loader
 from .forms import UserCreationForm
 # captcha
 import requests
@@ -7,6 +8,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
 #captcha
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login
+
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from . import models
@@ -22,7 +26,24 @@ from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth.forms import UserChangeForm
 from django.shortcuts import get_object_or_404
 
+def index(request):
+    if request.user and request.user.is_authenticated():
+        return HttpResponseRedirect('/home/')
+    if request.method == 'POST':
+        form = LoginForm(request.POST, request.FILES)
+        if form.is_valid():
+            login(request, form.user)
+            return JsonResponse({"error": False})
+        else:
+            return JsonResponse({"error": True, "errors": form.errors})
+    context = {
+
+        "login_form": AuthenticationForm
+    }
+    return render(request, 'registration/login.html', context)
+
 class LoginView(base_auth_views.LoginView):
+
     def form_valid(self, form):
         recaptcha_response = self.request.POST.get('g-recaptcha-response')
         data = {
@@ -39,6 +60,8 @@ class LoginView(base_auth_views.LoginView):
         result = r.json()
         if result['success']:
             messages.success(self.request, 'login success!')
+            # return HttpResponseRedirect('registration:ggauth')
+            # return redirect('registration:signup')
             auth_login(self.request, form.get_user())
             return HttpResponseRedirect(self.get_success_url())
 
@@ -104,3 +127,5 @@ def activate(request, uidb64, token):
         return render(request, 'success_active_email.html')
     else:
         return HttpResponse('Activation link is invalid', {user})
+
+#add google Authenticator
