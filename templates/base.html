@@ -46,6 +46,12 @@
         <li>  <a href="{% url 'registration:login1' %}">login!!</a> </li>
         <li>  <a href="{% url 'registration:signup' %}">signup</a> </li>
         {% endif %}
+        {% if request.user.userotp and user.is_authenticated %}
+          <li><a href="{% url 'mfa:disable_mfa' %}">Disable Mfa</a></li>
+        {% endif %}
+        {% if user.is_authenticated and not request.user.userotp  %}
+          <li><a href="{% url 'mfa:configure_mfa' %}">Configure Mfa</a></li>
+        {% endif %}
       </ul>
     </div>
     <!-- /.navbar-collapse -->
@@ -58,12 +64,10 @@
     <div class="container">
       <div class="row">
         <div class="intro-text">
-          <h3>Login Successful</h3>
-          {% if request.user.userotp %}
-            <h3><a href="{% url 'mfa:disable_mfa' %}">Disable Mfa</a></h3>
-          {% else %}
-            <h3><a href="{% url 'mfa:configure_mfa' %}">Configure Mfa</a></h3>
+          {% if user.is_authenticated %}
+            <h2>Hi {{ user.username }}</h2>
           {% endif %}
+
           {% block content %}
           {% endblock %}
 
