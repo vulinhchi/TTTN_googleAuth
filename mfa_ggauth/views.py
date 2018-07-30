@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from mfa_ggauth.models import is_mfa_enabled, UserOTP
+from django_mfa.models import is_mfa_enabled, UserOTP
 
 from . import totp
 

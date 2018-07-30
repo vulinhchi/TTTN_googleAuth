@@ -1,4 +1,4 @@
-from django.http import HttpResponse,HttpResponseRedirect,JsonResponse
+from django.http import HttpResponse,HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.template import loader
 from .forms import UserCreationForm
@@ -8,8 +8,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
 #captcha
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login
 
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
@@ -25,22 +23,6 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth.forms import UserChangeForm
 from django.shortcuts import get_object_or_404
-
-def index(request):
-    if request.user and request.user.is_authenticated():
-        return HttpResponseRedirect('/home/')
-    if request.method == 'POST':
-        form = LoginForm(request.POST, request.FILES)
-        if form.is_valid():
-            login(request, form.user)
-            return JsonResponse({"error": False})
-        else:
-            return JsonResponse({"error": True, "errors": form.errors})
-    context = {
-
-        "login_form": AuthenticationForm
-    }
-    return render(request, 'registration/login.html', context)
 
 class LoginView(base_auth_views.LoginView):
 
