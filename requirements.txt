@@ -1,7 +1,4 @@
 Django<=1.11,>=1.6.0
 requests
 django-mfa==1.0
-
-
-
 psycopg2==2.7
