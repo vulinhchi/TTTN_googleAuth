@@ -8,15 +8,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django_mfa.models import is_mfa_enabled, UserOTP
+from mfa_ggauth.models import is_mfa_enabled, UserOTP
 
 from . import totp
 
-
-@login_required
-def security_settings(request):
-    twofactor_enabled = is_mfa_enabled(request.user)
-    return render(request, 'django_mfa/security.html', {"twofactor_enabled": twofactor_enabled})
 
 
 @login_required
@@ -66,6 +61,7 @@ def disable_mfa(request):
         user_mfa.delete()
         return HttpResponseRedirect(reverse("mfa:configure_mfa"))
     return render(request, 'django_mfa/disable_mfa.html')
+
 
 
 @login_required
