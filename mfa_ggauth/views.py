@@ -13,11 +13,6 @@ from mfa_ggauth.models import is_mfa_enabled, UserOTP
 from . import totp
 
 
-@login_required
-def security_settings(request):
-    twofactor_enabled = is_mfa_enabled(request.user)
-    return render(request, 'django_mfa/security.html', {"twofactor_enabled": twofactor_enabled})
-
 
 @login_required
 def configure_mfa(request):
@@ -66,6 +61,7 @@ def disable_mfa(request):
         user_mfa.delete()
         return HttpResponseRedirect(reverse("mfa:configure_mfa"))
     return render(request, 'django_mfa/disable_mfa.html')
+
 
 
 @login_required
