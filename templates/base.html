@@ -11,6 +11,7 @@
 
 <!-- Stylesheet
     ================================================== -->
+
 <link rel="stylesheet" type="text/css"  href="{% static '/css/style.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static '/css/nivo-lightbox/nivo-lightbox.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static '/css/nivo-lightbox/default.css' %}">
@@ -37,6 +38,7 @@
         <li><a href="{% url 'home' %}" class="page-scroll">Home</a></li>
         <li><a href="#about" class="page-scroll">About</a></li>
         <li><a href="#portfolio" class="page-scroll">Portfolio</a></li>
+        <li>  <a href="{% url 'registration:listuser' %}">List user </a> </li>
         {% if user.is_authenticated %}
           <li>Hi {{ user.username }}</li>
           <li><a href="{% url 'logout' %}">Logout </a></li>
@@ -66,7 +68,9 @@
         <div class="intro-text">
           {% if user.is_authenticated %}
             <h2>Hi {{ user.username }}</h2>
+
           {% endif %}
+
 
           {% block content %}
           {% endblock %}
@@ -87,7 +91,7 @@
       <div class="col-xs-12 col-md-6"> <img src="{% static '/img/about.jpg' %}" class="img-responsive" alt=""> </div>
       <div class="col-xs-12 col-md-6">
         <div class="about-text">
-          ahihi ahihi ahihi do ngoc ahihi
+          <h2> Xác thực đa nhân tố với Google Authenticator </h2>
 
 
       </div>

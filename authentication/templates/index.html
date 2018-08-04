@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
+
+	{% load static %}
+		<form action = "{% url 'registration:index' username  %}" method = 'post'>
+    		{% csrf_token %}
+
+			{% if not check_login and user.is_authenticated %}
+			<!-- k cho user chua dang nhap co the dat cau hoi -->
+			<p> Ask {{ username }} something!</p>
+			From:
+			<input class="form-control" type="text" name="asker_" placeholder="Asker" required>
+			<br />
+			Question:
+			<input class="form-control" type="text" name="content_" placeholder="Content of the question" required="">
+			<br />
+		
+			<input type = "submit" value = "Ask" />
+			{% endif %}
+        </form>
+
+			{% if question_list %}
+				    <h2> Someone asked {{ username }} :3 </h2>
+		    	{% for q in question_list %}
+        			         <h2>Question: {{ q.content }} </h2>
+          	          	<p>From: {{ q.name_asker }}</p>
+                        <p>Time: {{ q.asking_day }} </p>
+            				        {% if not q.answer %}
+            					       {% if check_login %}
+                              <form action = "{% url 'registration:index' username %}" method = 'post'>
+                                            {% csrf_token %}
+            					           <input type="text" name="answer_" placeholder="Your answer">
+            					           <input type="hidden" name="question_id" value="{{ q.id }}">
+            					           <input type="submit" name="Answer">
+                            	</form>
+
+            					       {% endif%} <!-- if check_login-->
+            				        {% else %}
+            					       <p>  The answer: {{ q.answer }}</p>
+            				        {% endif %} <!-- if answer-->
+    			{% endfor %}
+
+    		{% else %}
+    			          <p> {{ username }} don't have any question yet!</p>
+
+    		{% endif %}
+
+ {% endblock %}

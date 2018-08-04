@@ -24,6 +24,7 @@ def configure_mfa(request):
             '{0:020x}'.format(random.getrandbits(80))
             ), 'hex_codec')
         )
+        print("Bse_32_secret====" , base_32_secret)
         totp_obj = totp.TOTP(base_32_secret.decode("utf-8"))
         qr_code = re.sub(r'=+$', '', totp_obj.provisioning_uri(request.user.email))
 
@@ -82,7 +83,7 @@ def verify_otp(request):
 
             is_verified = totp_.verify(verification_code)
 
-            if is_verified:
+            if  is_verified:
                 request.session['verfied_otp'] = True
                 return HttpResponseRedirect(request.POST.get("next", settings.LOGIN_REDIRECT_URL))
             ctx['error_message'] = "Your code is expired or invalid."

@@ -136,6 +136,6 @@ STATICFILES_DIRS = [
 
 ]
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
-LOGIN_URL = LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = LOGIN_REDIRECT_URL = 'registration:listuser'
 LOGOUT_REDIRECT_URL = '/'
 # STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'

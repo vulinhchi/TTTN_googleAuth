@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %} List User {% endblock %}
+
+
+{% block content %}
+<ul>
+
+{% for u in user_ %}
+			<li>
+        {{u.username}}
+        <a href="{% url 'registration:index' u.username %}"> {{u.username}}
+      </a>
+ 			</li>
+{% endfor %}
+</ul>
+{% endblock %}

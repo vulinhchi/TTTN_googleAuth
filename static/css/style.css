@@ -160,8 +160,9 @@ hr {
 	height: 1100px;
 	padding: 0;
 	text-align: center;
-	background: url(../img/intro-bg.jpg) no-repeat  ;
-	background-color: #e5e5e5;
+	/* background: url(../img/portfolio/07-small.jpg) no-repeat  ; */
+
+	background-color: rgb(84,208,221);
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	background-size: cover;
