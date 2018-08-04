@@ -35,7 +35,11 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
+        {% if  not user.is_authenticated %}
         <li><a href="{% url 'home' %}" class="page-scroll">Home</a></li>
+        {% else %}
+        <li><a href="{% url 'registration:index' user.username %}" class="page-scroll"> Home</a></li>
+        {% endif %}
         <li><a href="#about" class="page-scroll">About</a></li>
         <li><a href="#portfolio" class="page-scroll">Portfolio</a></li>
         <li>  <a href="{% url 'registration:listuser' %}">List user </a> </li>
