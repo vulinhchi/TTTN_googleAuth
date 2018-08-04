@@ -4,29 +4,44 @@
 
 
 	{% load static %}
-		<form action = "{% url 'registration:index' username  %}" method = 'post'>
-    		{% csrf_token %}
-
-			{% if not check_login and user.is_authenticated %}
+		{% if not check_login and user.is_authenticated %}
 			<!-- k cho user chua dang nhap co the dat cau hoi -->
-			<p> Ask {{ username }} something!</p>
-			From:
+		<form accept-charset="UTF-8" action = "{% url 'registration:index' username  %}" method = 'post'>
+    		{% csrf_token %}
+				<p> Ask {{ username }} something!</p>
 			<input class="form-control" type="text" name="asker_" placeholder="Asker" required>
 			<br />
-			Question:
 			<input class="form-control" type="text" name="content_" placeholder="Content of the question" required="">
 			<br />
-		
-			<input type = "submit" value = "Ask" />
+			{% if next_url %}
+			<input type="hidden" name="next" value="{{next_url}}">
+			{% endif %}
+			{% if messages %}
+			<ul class="messages">
+			{% for message in messages %}
+			<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+			{% endfor %}
+			</ul>
+			{% endif %}
+			<input class="form-control" id="two-factor-code" type="text" name="verification_code" value="" placeholder="Enter six digit number." autocomplete="off">
+			
+			{% if error_message %}
+			<p>{{ error_message }}</p>
+			{% endif %}
+			<br />
+			<input class="form-control btn btn-primary "  type = "submit" value = "ASK" />
 			{% endif %}
         </form>
+
+
+
 
 			{% if question_list %}
 				    <h2> Someone asked {{ username }} :3 </h2>
 		    	{% for q in question_list %}
         			         <h2>Question: {{ q.content }} </h2>
-          	          	<p>From: {{ q.name_asker }}</p>
-                        <p>Time: {{ q.asking_day }} </p>
+          	          	<h4>From: {{ q.name_asker }}</h4>
+                        <h6>Time: {{ q.asking_day }} </h6>
             				        {% if not q.answer %}
             					       {% if check_login %}
                               <form action = "{% url 'registration:index' username %}" method = 'post'>

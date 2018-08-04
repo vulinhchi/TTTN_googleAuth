@@ -32,12 +32,9 @@ import re
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from mfa_ggauth.models import is_mfa_enabled, UserOTP
-from mfa_ggauth import totp
 
+from mfa_ggauth import totp
 class LoginView(base_auth_views.LoginView):
 
     def form_valid(self, form):
@@ -124,16 +121,7 @@ def activate(request, uidb64, token):
     else:
         return HttpResponse('Activation link is invalid', {user})
 
-class DetailProfileView(generic.DetailView):
-    template_name = 'anotheruser.html'
-    model = models.User
-    slug_field = 'username' # username trong bang User
 
-    def get_context_data(self, **kwargs):
-        u = models.User.objects.get(username=self.request.path.split('/')[-1])
-        context = super().get_context_data(**kwargs)
-        context['info']= u
-        return context
 
 class ListUser(generic.ListView):
     template_name = 'listuser.html'# list ra cac profile tru Admin
@@ -146,41 +134,50 @@ class ListUser(generic.ListView):
 
 # def IndexView(request, username):
 #     ctx = {}
-#     user = User.objects.get(username = username) #user hien dang dang nhap
-#
-#     if request.user == user:
-#     	check_login = True
-#     else:
-#     	check_login = False
 #     if request.method == "POST":
-#         content_field = request.POST['content_']
-#         asker_field = request.POST['asker_']
-#         verification_code = request.POST.get('verification_code')
-#         user.question_ahihi.create(content = content_field,
-#          name_asker = asker_field,
-#          id_user_receive_id = user.id,
-#          answer ="")
-#
-#         question_list = user.question_ahihi.filter(id_user_receive_id = user.id).all()
-#         if verification_code is None:
-#             ctx['error_message'] = "Missing verification code."
+#         user = User.objects.get(username = username) #user hien dang dang nhap
+#         if request.user == user:
+#         	check_login = True
 #         else:
-#             otp_ = UserOTP.objects.get(user=request.user)
-#             totp_ = totp.TOTP(otp_.secret_key)
+#         	check_login = False
 #
-#             is_verified = totp_.verify(verification_code)
+#         if not check_login:
+#             content_field = request.POST['content_']
+#             asker_field = request.POST['asker_']
 #
-#             if  is_verified:
-#                 request.session['verfied_otp'] = True
-#                 return HttpResponseRedirect(request.POST.get("next", settings.LOGIN_REDIRECT_URL))
-#             ctx['error_message'] = "Your code is expired or invalid."
+#             user.question_ahihi.create(content = content_field,
+#              name_asker = asker_field,
+#              id_user_receive_id = user.id,
+#              answer ="")
 #
-#     ctx['next'] = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
-#     return render(request, 'django_mfa/login_verify.html', ctx, status=400)
+#             question_list = user.question_ahihi.filter(id_user_receive_id = user.id).all()
+#             return render(request, 'index.html',ctx,
+#          			{'question_list': question_list,
+#                  	'username': user.username,
+#                  	'first_name': user.first_name,
+#                  	'last_name': user.last_name,
+#                  	'check_login':check_login})
+#
+#         else: # if check_login
+#             answer_field = request.POST['answer_']
+#             question_id = request.POST['question_id']
+#             answer_pickup = user.question_ahihi.get(pk = question_id)
+#             answer_pickup.answer = answer_field
+#             answer_pickup.save()
+#             question_list = user.question_ahihi.filter(id_user_receive_id = user.id).all()
+#             return render(request, 'index.html',ctx,
+#          			{'question_list': question_list,
+#                  	'username': user.username,
+#                  	'first_name': user.first_name,
+#                  	'last_name': user.last_name,
+#                  	'check_login':check_login})
+#     return render(request, 'index.html',ctx)
+
+
 
 def IndexView(request, username):
     user = User.objects.get(username = username) #user hien dang dang nhap
-
+    ctx = {}
     if request.user == user:
     	check_login = True
     else:
@@ -188,18 +185,44 @@ def IndexView(request, username):
     if not check_login :#anonymous
     	# anonymous can ask
     	try:
+
             content_field = request.POST['content_']
             asker_field = request.POST['asker_']
-            user.question_ahihi.create(content = content_field,
-    		 name_asker = asker_field,
-    		 id_user_receive_id = user.id,
-    		 answer ="")
-            return HttpResponseRedirect(reverse('registration:index', args = (username, )))
+            verification_code = request.POST['verification_code']
+            is_verified = False
+            print('cau hoi: ',content_field)
+            print('ma xac thuc: ',verification_code)
+            if verification_code is None:
+                messages.success(request, 'Missing verification code.')
+                print(" chua nhap ma")
+            else:
+                print("is_verified ???", is_verified)
+                print(" da nhap ma code")
+                print("user = ", request.user)
+                print("secret_key = ", UserOTP.secret_key)
+                otp_ = UserOTP.objects.get(user=request.user)
+                totp_ = totp.TOTP(otp_.secret_key)
+                print("opt_   = ", otp_ )
+                print("topt_   = ", totp_)
+                is_verified = totp_.verify(verification_code)
+                print("is_verified ???", is_verified)
+
+                if  is_verified:
+                    # request.session['verfied_otp'] = True
+                    user.question_ahihi.create(content = content_field,
+            		 name_asker = asker_field,
+                	 id_user_receive_id = user.id,
+                 	 answer ="")
+                    # return HttpResponseRedirect(request.POST.get("next", settings.LOGIN_REDIRECT_URL))
+                message.error(request,"Your code is expired or invalid.")
+                error_message= "Your code is expired or invalid."
+            return HttpResponseRedirect(reverse('registration:index' ,args = (username,error_message )))
     	except:
 
             try:
                 question_list = user.question_ahihi.filter(id_user_receive_id = user.id).all()
                 #loc ra danh sach cac cau hoi theo user
+
             except:
                 pass
             return render(request, 'index.html',
@@ -207,7 +230,9 @@ def IndexView(request, username):
             	'username': user.username,
             	'first_name': user.first_name,
             	'last_name': user.last_name,
-            	'check_login':check_login})
+            	'check_login':check_login,
+
+                })
     else: #current user
     	#error = "you have to log in first!"
     	#return render(request, 'authentication/login.html',{"error":error})

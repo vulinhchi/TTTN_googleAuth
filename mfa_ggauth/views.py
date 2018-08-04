@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from mfa_ggauth.models import is_mfa_enabled, UserOTP
+from .models import is_mfa_enabled, UserOTP
 
 from . import totp
 
@@ -74,15 +74,16 @@ def verify_otp(request):
 
     if request.method == "POST":
         verification_code = request.POST.get('verification_code')
-
+        print('ma xac thuc: ',verification_code)
         if verification_code is None:
             ctx['error_message'] = "Missing verification code."
         else:
             otp_ = UserOTP.objects.get(user=request.user)
             totp_ = totp.TOTP(otp_.secret_key)
-
+            print("opt_   = ", otp_ )
+            print("topt_   = ", totp_)
             is_verified = totp_.verify(verification_code)
-
+            print("is_verified ???", is_verified)
             if  is_verified:
                 request.session['verfied_otp'] = True
                 return HttpResponseRedirect(request.POST.get("next", settings.LOGIN_REDIRECT_URL))
