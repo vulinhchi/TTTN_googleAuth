@@ -200,21 +200,27 @@ def IndexView(request, username):
                 print(" da nhap ma code")
                 print("user = ", request.user)
                 print("secret_key = ", UserOTP.secret_key)
-                otp_ = UserOTP.objects.get(user=request.user)
-                totp_ = totp.TOTP(otp_.secret_key)
-                print("opt_   = ", otp_ )
-                print("topt_   = ", totp_)
-                is_verified = totp_.verify(verification_code)
-                print("is_verified ???", is_verified)
-
-                if  is_verified:
-                    # request.session['verfied_otp'] = True
-                    user.question_ahihi.create(content = content_field,
-            		 name_asker = asker_field,
-                	 id_user_receive_id = user.id,
-                 	 answer ="")
+                if not is_mfa_enabled(request.user):
+                    messages.error(request, 'You have to enable google authenticator to ask someone!')
+                    print(" chua bat 2 buoc")
                 else:
-                    messages.error(request, 'Your code is expired or invalid')
+                    otp_ = UserOTP.objects.get(user=request.user)
+                    print("key = ", otp_.secret_key)
+                    totp_ = totp.TOTP(otp_.secret_key)
+                    print("opt_   = ", otp_ )
+                    print("topt_   = ", totp_)
+                    is_verified = totp_.verify(verification_code)
+                    print("is_verified ???", is_verified)
+
+                    if  is_verified:
+                        # request.session['verfied_otp'] = True
+                        user.question_ahihi.create(content = content_field,
+                		 name_asker = asker_field,
+                    	 id_user_receive_id = user.id,
+                     	 answer ="")
+
+                    else:
+                        messages.error(request, 'Your code is expired or invalid')
             return HttpResponseRedirect(reverse('registration:index', args = (username, )))
     	except:
 
