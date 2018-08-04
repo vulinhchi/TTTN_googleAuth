@@ -193,7 +193,7 @@ def IndexView(request, username):
             print('cau hoi: ',content_field)
             print('ma xac thuc: ',verification_code)
             if verification_code is None:
-                messages.success(request, 'Missing verification code.')
+                messages.error(request, 'You need to type the code!')
                 print(" chua nhap ma")
             else:
                 print("is_verified ???", is_verified)
@@ -213,16 +213,13 @@ def IndexView(request, username):
             		 name_asker = asker_field,
                 	 id_user_receive_id = user.id,
                  	 answer ="")
-                    # return HttpResponseRedirect(request.POST.get("next", settings.LOGIN_REDIRECT_URL))
-                message.error(request,"Your code is expired or invalid.")
-                error_message= "Your code is expired or invalid."
-            return HttpResponseRedirect(reverse('registration:index' ,args = (username,error_message )))
+                else:
+                    messages.error(request, 'Your code is expired or invalid')
+            return HttpResponseRedirect(reverse('registration:index', args = (username, )))
     	except:
 
             try:
                 question_list = user.question_ahihi.filter(id_user_receive_id = user.id).all()
-                #loc ra danh sach cac cau hoi theo user
-
             except:
                 pass
             return render(request, 'index.html',
@@ -231,7 +228,6 @@ def IndexView(request, username):
             	'first_name': user.first_name,
             	'last_name': user.last_name,
             	'check_login':check_login,
-
                 })
     else: #current user
     	#error = "you have to log in first!"

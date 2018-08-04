@@ -13,9 +13,7 @@
 			<br />
 			<input class="form-control" type="text" name="content_" placeholder="Content of the question" required="">
 			<br />
-			{% if next_url %}
-			<input type="hidden" name="next" value="{{next_url}}">
-			{% endif %}
+
 			{% if messages %}
 			<ul class="messages">
 			{% for message in messages %}
@@ -24,10 +22,8 @@
 			</ul>
 			{% endif %}
 			<input class="form-control" id="two-factor-code" type="text" name="verification_code" value="" placeholder="Enter six digit number." autocomplete="off">
-			
-			{% if error_message %}
-			<p>{{ error_message }}</p>
-			{% endif %}
+
+
 			<br />
 			<input class="form-control btn btn-primary "  type = "submit" value = "ASK" />
 			{% endif %}
