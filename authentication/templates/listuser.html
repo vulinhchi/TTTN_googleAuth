@@ -6,10 +6,10 @@
 <ul>
 
 {% for u in user_ %}
-			<li>
-        {{u.username}}
+			<li> <h3>
         <a href="{% url 'registration:index' u.username %}"> {{u.username}}
       </a>
+		</h3>
  			</li>
 {% endfor %}
 </ul>

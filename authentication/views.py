@@ -25,10 +25,6 @@ from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth.forms import UserChangeForm
 from django.shortcuts import get_object_or_404
 # authenticator
-import base64
-import codecs
-import random
-import re
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -132,60 +128,14 @@ class ListUser(generic.ListView):
         context['user_'] = user_
         return context
 
-# def IndexView(request, username):
-#     ctx = {}
-#     if request.method == "POST":
-#         user = User.objects.get(username = username) #user hien dang dang nhap
-#         if request.user == user:
-#         	check_login = True
-#         else:
-#         	check_login = False
-#
-#         if not check_login:
-#             content_field = request.POST['content_']
-#             asker_field = request.POST['asker_']
-#
-#             user.question_ahihi.create(content = content_field,
-#              name_asker = asker_field,
-#              id_user_receive_id = user.id,
-#              answer ="")
-#
-#             question_list = user.question_ahihi.filter(id_user_receive_id = user.id).all()
-#             return render(request, 'index.html',ctx,
-#          			{'question_list': question_list,
-#                  	'username': user.username,
-#                  	'first_name': user.first_name,
-#                  	'last_name': user.last_name,
-#                  	'check_login':check_login})
-#
-#         else: # if check_login
-#             answer_field = request.POST['answer_']
-#             question_id = request.POST['question_id']
-#             answer_pickup = user.question_ahihi.get(pk = question_id)
-#             answer_pickup.answer = answer_field
-#             answer_pickup.save()
-#             question_list = user.question_ahihi.filter(id_user_receive_id = user.id).all()
-#             return render(request, 'index.html',ctx,
-#          			{'question_list': question_list,
-#                  	'username': user.username,
-#                  	'first_name': user.first_name,
-#                  	'last_name': user.last_name,
-#                  	'check_login':check_login})
-#     return render(request, 'index.html',ctx)
-
-
-
 def IndexView(request, username):
-    user = User.objects.get(username = username) #user hien dang dang nhap
-    ctx = {}
+    user = User.objects.get(username = username) #user dang duoc xem profile
     if request.user == user:
     	check_login = True
     else:
     	check_login = False
     if not check_login :#anonymous
-    	# anonymous can ask
     	try:
-
             content_field = request.POST['content_']
             asker_field = request.POST['asker_']
             verification_code = request.POST['verification_code']
@@ -206,11 +156,22 @@ def IndexView(request, username):
                 else:
                     otp_ = UserOTP.objects.get(user=request.user)
                     print("key = ", otp_.secret_key)
+                    #  key =  OW4B3JUVNOAJJVYK
+                    #logout ra, dang nhap lai thi key cua user van giu nguyen, do bang UserOTP k thay đổi
                     totp_ = totp.TOTP(otp_.secret_key)
                     print("opt_   = ", otp_ )
                     print("topt_   = ", totp_)
                     is_verified = totp_.verify(verification_code)
+                    print(totp_.verify(verification_code))
                     print("is_verified ???", is_verified)
+                    """
+                    user =  vlc1
+                secret_key =  <django.db.models.query_utils.DeferredAttribute object at 0x7fca82acab00>
+                key =  45RGJD2XTIYPKXWB
+                opt_   =  UserOTP object
+                topt_   =  <mfa_ggauth.totp.TOTP object at 0x7fca8060f0f0>
+
+                    """
 
                     if  is_verified:
                         # request.session['verfied_otp'] = True
@@ -218,7 +179,7 @@ def IndexView(request, username):
                 		 name_asker = asker_field,
                     	 id_user_receive_id = user.id,
                      	 answer ="")
-
+                        messages.success(request, 'You just asked!!!')
                     else:
                         messages.error(request, 'Your code is expired or invalid')
             return HttpResponseRedirect(reverse('registration:index', args = (username, )))
@@ -236,8 +197,6 @@ def IndexView(request, username):
             	'check_login':check_login,
                 })
     else: #current user
-    	#error = "you have to log in first!"
-    	#return render(request, 'authentication/login.html',{"error":error})
     	try:
 
     		answer_field = request.POST['answer_']
