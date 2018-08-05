@@ -43,9 +43,20 @@
             					       {% if check_login %}
                               <form action = "{% url 'registration:index' username %}" method = 'post'>
                                             {% csrf_token %}
-            					           <input type="text" name="answer_" placeholder="Your answer">
+            					           <input class="form-control" type="text" name="answer_" placeholder="Your answer">
             					           <input type="hidden" name="question_id" value="{{ q.id }}">
-            					           <input type="submit" name="Answer">
+																 	<br />
+																 {% if messages %}
+													 			<ul class="messages">
+													 			{% for message in messages %}
+													 			<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+													 			{% endfor %}
+													 			</ul>
+													 			{% endif %}
+													 			<input class="form-control" id="two-factor-code" type="text" name="verification_code"
+													 				value="" placeholder="Enter six digit number." autocomplete="off" required="">
+																	<br />
+            					           <input class="form-control btn btn-primary " type="submit" value="Answer">
                             	</form>
 
             					       {% endif%} <!-- if check_login-->

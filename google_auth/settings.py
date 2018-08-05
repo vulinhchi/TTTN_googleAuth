@@ -129,17 +129,18 @@ RECAPTCHA_PROXY = 'http://localhost:9000'
 AUTH_USER_MODEL = 'auth.User'
 
 STATIC_URL = '/static/'
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
+MEDIA_URL = '/static/media/'
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'static/media/')
 
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+
 LOGIN_URL = LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 # STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'

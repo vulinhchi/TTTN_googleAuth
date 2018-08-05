@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from .models import Captcha
+import random
 #captcha
 
 from django.urls import reverse_lazy, reverse
@@ -32,27 +33,37 @@ from django.contrib.auth.decorators import login_required
 from mfa_ggauth.models import is_mfa_enabled, UserOTP
 from mfa_ggauth import totp
 
+def random_id():
+    return random.randint(1,7)
 class LoginView(base_auth_views.LoginView):
 
+    def get_context_data(self, **kwargs):
+        id_ = random_id()
+        cap = Captcha.objects.get(id=id_)
+        context = super().get_context_data(**kwargs)
+        context['cap'] = cap
+        context['id_'] = id_
+
+        return context
     def form_valid(self, form):
-
-        recaptcha_response = self.request.POST.get('g-recaptcha-response')
-        data = {
-            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-            'response': recaptcha_response
-        }
-
-        # without ssl certificat check
-        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data, verify=False)
-
-        # with ssl certificat check
-        # r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-
-        result = r.json()
-        if result['success']:
-            messages.success(self.request, 'login success!')
-            # return HttpResponseRedirect('registration:ggauth')
-            # return redirect('registration:signup')
+        id_ = self.request.POST['captcha_id']
+        cap = Captcha.objects.get(id=id_)
+        get_code_captcha = self.request.POST['code_captcha']
+        # recaptcha_response = self.request.POST.get('g-recaptcha-response')
+        # data = {
+        #     'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+        #     'response': recaptcha_response
+        # }
+        #
+        # # without ssl certificat check
+        # r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data, verify=False)
+        #
+        # # with ssl certificat check
+        # # r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        #
+        # result = r.json()
+        if get_code_captcha == cap.code_captcha:
+            # messages.success(self.request, 'login success!')
             auth_login(self.request, form.get_user())
             return HttpResponseRedirect(self.get_success_url())
 
@@ -62,25 +73,16 @@ class LoginView(base_auth_views.LoginView):
 
 
 def SignUp(request):
+
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
+        cap = Captcha.objects.get(id=random_id())
+        print("Cap = ", cap)
+
         if form.is_valid():
-
-            # check recaptcha truoc
-            recaptcha_response = request.POST.get('g-recaptcha-response')
-            data = {
-                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-                'response': recaptcha_response
-            }
-
-            # without ssl certificat check
-            r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data, verify=False)
-
-            # with ssl certificat check
-            # r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-
-            result = r.json()
-            if result['success']:
+            get_code_captcha = request.POST['code_captcha']
+            print("cap " ,cap)
+            if get_code_captcha == cap.code_captcha:
                 messages.success(request, 'sign up success! Please check your email to complete the registration!')
                 user = form.save(commit=False)
                 user.is_active = False
@@ -103,7 +105,12 @@ def SignUp(request):
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')
     else:
         form = UserCreationForm()
-    return render(request, 'signup.html',{'form':form})
+        # print("random = ", random)
+        cap = Captcha.objects.get(id=random_id())
+        print("Cap = ", cap)
+    return render(request, 'signup.html',{'form':form,
+                                            'cap':cap,
+                                            })
 
 def activate(request, uidb64, token):
     try:
@@ -126,7 +133,7 @@ class ListUser(generic.ListView):
     template_name = 'listuser.html'# list ra cac profile tru Admin
     model = models.User
     def get_context_data(sefl, **kwargs):
-        user_ = models.User.objects.all
+        user_ = models.User.objects.all()
         context = super().get_context_data(**kwargs)
         context['user_'] = user_
         return context
@@ -201,13 +208,42 @@ def IndexView(request, username):
                 })
     else: #current user
     	try:
+            verification_code = request.POST['verification_code']
+            is_verified = False
+            answer_field = request.POST['answer_']
+            question_id = request.POST['question_id']
+            if not is_mfa_enabled(request.user):
+                messages.error(request, 'You have to enable google authenticator to ask someone!')
+                print(" chua bat 2 buoc")
+            else:
 
-    		answer_field = request.POST['answer_']
-    		question_id = request.POST['question_id']
-    		answer_pickup = user.question_ahihi.get(pk = question_id)
-    		answer_pickup.answer = answer_field
-    		answer_pickup.save()
-    		return HttpResponseRedirect(reverse('registration:index', args = (username, )))
+                otp_ = UserOTP.objects.get(user=request.user)
+                print("key = ", otp_.secret_key)
+                #  key =  OW4B3JUVNOAJJVYK
+                #logout ra, dang nhap lai thi key cua user van giu nguyen, do bang UserOTP k thay đổi
+                totp_ = totp.TOTP(otp_.secret_key)
+                print("opt_   = ", otp_ )
+                print("topt_   = ", totp_)
+                is_verified = totp_.verify(verification_code)
+                print(totp_.verify(verification_code))
+                print("is_verified ???", is_verified)
+                """
+                user =  vlc1
+            secret_key =  <django.db.models.query_utils.DeferredAttribute object at 0x7fca82acab00>
+            key =  45RGJD2XTIYPKXWB
+            opt_   =  UserOTP object
+            topt_   =  <mfa_ggauth.totp.TOTP object at 0x7fca8060f0f0>
+
+                """
+
+                if is_verified:
+                    answer_pickup = user.question_ahihi.get(pk = question_id)
+                    answer_pickup.answer = answer_field
+                    answer_pickup.save()
+                    # messages.success(request, 'You just answered!!!')
+                else:
+                    messages.error(request, 'Your code is expired or invalid')
+            return HttpResponseRedirect(reverse('registration:index', args = (username, )))
     	except:
     		try:
     			question_list = user.question_ahihi.filter(id_user_receive_id = user.id).all()

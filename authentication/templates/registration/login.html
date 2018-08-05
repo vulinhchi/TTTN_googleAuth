@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %} Login page {% endblock %}
 {% load static %}
 
@@ -27,9 +27,13 @@
     {% endif %}
 		{{ form.as_p }}
 		<!-- add recaptcha -->
-		<script src='https://www.google.com/recaptcha/api.js'></script>
-		<div class="g-recaptcha" data-sitekey="6Lf35GIUAAAAAFg4uWQAkyQtBLhIVVP5ZvXJnp9b"></div>
-
+		<!-- <script src='https://www.google.com/recaptcha/api.js'></script>
+		<div class="g-recaptcha" data-sitekey="6Lf35GIUAAAAAFg4uWQAkyQtBLhIVVP5ZvXJnp9b"></div> -->
+		
+		<input type="hidden" name="captcha_id" value="{{ id_ }}">
+			<img src="{{ cap.picture.url }}" width="240" />
+			<input type="text" class="form-control" name="code_captcha"
+				autocomplete="off" required="" placeholder="Enter captcha code">
 		<button type="submit" class="btn btn-custom btn-lg page-scroll">Login</button>
 	</form>
 	 <a href="{% url 'registration:signup' %}" > let's sign in now!</a>
