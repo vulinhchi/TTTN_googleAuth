@@ -1,4 +1,7 @@
 from django.conf.urls import url, include
+from django.conf.urls.static import static
+from django.conf import settings
+
 
 from django.contrib.auth import views as auth_views # su dung login, logout mac dinh
 from . import views
@@ -11,4 +14,4 @@ urlpatterns =[
     url(r'^list/$', views.ListUser.as_view(), name='listuser'),
     url(r'^ask/(?P<username>.+)/$', views.IndexView, name='index'),
     # url(r'^detailuser/(?P<slug>.+)/$', views.DetailProfileView.as_view() , name='detailuser'),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

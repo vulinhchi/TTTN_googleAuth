@@ -7,6 +7,7 @@ import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
+from .models import Captcha
 #captcha
 
 from django.urls import reverse_lazy, reverse
@@ -29,11 +30,12 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from mfa_ggauth.models import is_mfa_enabled, UserOTP
-
 from mfa_ggauth import totp
+
 class LoginView(base_auth_views.LoginView):
 
     def form_valid(self, form):
+
         recaptcha_response = self.request.POST.get('g-recaptcha-response')
         data = {
             'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
@@ -63,6 +65,7 @@ def SignUp(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
+
             # check recaptcha truoc
             recaptcha_response = request.POST.get('g-recaptcha-response')
             data = {

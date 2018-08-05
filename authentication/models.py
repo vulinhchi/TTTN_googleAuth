@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User #phai co dong nay, mac du k co model nao moi
+from django.utils.translation import ugettext_lazy as _
 
 from datetime import datetime
 
@@ -12,3 +13,7 @@ class Question(models.Model):
 
 	def __str__(self):
 		return self.content
+
+class Captcha(models.Model):
+	picture = models.ImageField(upload_to='picture/', blank=True, null=True)
+	code_captcha = models.CharField(_('code_captcha'), max_length=250)
