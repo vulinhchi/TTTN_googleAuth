@@ -1,4 +1,4 @@
-Django<=1.11,>=1.6.0
+Django<=3.2.21,>=1.6.0
 requests
 psycopg2==2.7
 Pillow
